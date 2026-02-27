@@ -1,9 +1,10 @@
 ---
-name: Other
+name: Custom template
 about: Something that isn't a bug or feature request
-title: ''
+title: "[Custom]"
 labels: ''
 assignees: ''
+
 ---
 
 **What is this about?**
