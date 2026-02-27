@@ -1,0 +1,36 @@
+# some — configuration file
+# Place this at ~/.config/some/config.toml
+
+[general]
+# Syntax highlighting theme. Available themes include:
+#   base16-ocean.dark, base16-eighties.dark, base16-mocha.dark,
+#   InspiredGitHub, Solarized (dark), Solarized (light)
+theme = "base16-ocean.dark"
+
+# Show line numbers by default
+line_numbers = false
+
+# Wrap long lines by default
+wrap = false
+
+# Tab display width
+tab_width = 4
+
+# Enable mouse support
+mouse = true
+
+# Smart case search: case-insensitive unless query contains uppercase
+smart_case = true
+
+[colors]
+# Status bar colors (hex RGB)
+status_bar_bg = "#2b303b"
+status_bar_fg = "#c0c5ce"
+
+# Search match highlight
+search_match_bg = "#ebcb8b"
+search_match_fg = "#2b303b"
+
+# Line number gutter
+line_number_fg = "#65737e"
+gutter_bg = "#2b303b"

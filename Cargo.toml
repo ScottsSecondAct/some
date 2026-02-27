@@ -1,0 +1,59 @@
+[package]
+name = "some"
+version = "0.1.0"
+edition = "2021"
+authors = ["Scott"]
+description = "A jazzed-up terminal file viewer — like 'less', but more."
+license = "MIT"
+readme = "README.md"
+keywords = ["pager", "terminal", "viewer", "less", "tui"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+# CLI argument parsing
+clap = { version = "4", features = ["derive"] }
+
+# TUI framework + terminal backend
+ratatui = "0.29"
+crossterm = "0.28"
+
+# Syntax highlighting (TextMate grammars)
+syntect = "5"
+
+# Regex search
+regex = "1"
+
+# Memory-mapped file I/O for large files
+memmap2 = "0.9"
+
+# File watching for follow/tail mode
+notify = { version = "7", default-features = false, features = ["macos_kqueue"] }
+
+# Clipboard
+arboard = "3"
+
+# Config file support
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+
+# Locate config directories (~/.config/some/)
+dirs = "5"
+
+# Error handling
+anyhow = "1"
+thiserror = "2"
+
+# Logging (debug builds)
+log = "0.4"
+env_logger = "0.11"
+
+# Unicode width calculation for proper column alignment
+unicode-width = "0.2"
+
+# TTY detection (is stdin a pipe?)
+atty = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = true
+strip = true

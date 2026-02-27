@@ -1,0 +1,38 @@
+# some — Example configuration file
+# Place at: ~/.config/some/config.toml
+
+[general]
+# Syntax highlighting theme. Run `some --list-themes` to see available options.
+theme = "base16-ocean.dark"
+
+# Show line numbers by default
+line_numbers = false
+
+# Wrap long lines (false = horizontal scrolling)
+wrap = false
+
+# Tab display width
+tab_width = 4
+
+# Enable mouse support (scroll wheel, etc.)
+mouse = true
+
+# Smart case search: case-insensitive if query is all lowercase,
+# case-sensitive if it contains any uppercase characters.
+smart_case = true
+
+# Files larger than this (in bytes) use memory-mapped I/O
+# Default: 10 MB
+mmap_threshold = 10485760
+
+[colors]
+# Status bar colors (hex RGB)
+status_bar_fg = "#cdd6f4"
+status_bar_bg = "#1e1e2e"
+
+# Search match highlight
+search_match_fg = "#1e1e2e"
+search_match_bg = "#f9e2af"
+
+# Line number gutter color
+line_number_fg = "#6c7086"
