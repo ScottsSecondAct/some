@@ -1,8 +1,8 @@
 [package]
 name = "some"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
-authors = ["Scott"]
+authors = ["Scott Davis"]
 description = "A jazzed-up terminal file viewer — like 'less', but more."
 license = "MIT"
 readme = "README.md"
@@ -27,7 +27,7 @@ regex = "1"
 memmap2 = "0.9"
 
 # File watching for follow/tail mode
-notify = { version = "7", default-features = false, features = ["macos_kqueue"] }
+notify = "7"
 
 # Clipboard
 arboard = "3"
@@ -38,6 +38,14 @@ toml = "0.8"
 
 # Locate config directories (~/.config/some/)
 dirs = "5"
+
+# Transparent decompression
+flate2 = "1"
+zstd = "0.13"
+bzip2 = "0.4"
+
+# LCS diff algorithm
+similar = "2"
 
 # Error handling
 anyhow = "1"

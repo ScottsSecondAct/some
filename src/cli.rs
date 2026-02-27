@@ -45,4 +45,8 @@ pub struct Cli {
     /// Tab width for display
     #[arg(long = "tab-width", default_value = "4")]
     pub tab_width: u8,
+
+    /// Compare FILE (first positional) against FILE2 in unified diff view
+    #[arg(long = "diff", value_name = "FILE2")]
+    pub diff: Option<std::path::PathBuf>,
 }

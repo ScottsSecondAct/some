@@ -4,11 +4,12 @@ use std::path::PathBuf;
 
 /// Application configuration, loaded from ~/.config/some/config.toml
 /// with CLI flags taking precedence.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Default)]
 #[serde(default)]
 pub struct Config {
     pub general: GeneralConfig,
     pub colors: ColorConfig,
+    pub keys: KeysConfig,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -22,6 +23,8 @@ pub struct GeneralConfig {
     pub smart_case: bool,
     /// Bytes threshold above which mmap is used
     pub mmap_threshold: u64,
+    /// Optional custom themes directory (default: ~/.config/some/themes/)
+    pub themes_dir: Option<PathBuf>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -34,13 +37,35 @@ pub struct ColorConfig {
     pub line_number_fg: String,
 }
 
-impl Default for Config {
-    fn default() -> Self {
-        Self {
-            general: GeneralConfig::default(),
-            colors: ColorConfig::default(),
-        }
-    }
+/// Optional keybinding overrides. Unset fields keep their hardcoded defaults.
+#[derive(Debug, Clone, Deserialize, Default)]
+#[serde(default)]
+pub struct KeysConfig {
+    pub quit: Option<String>,
+    pub scroll_down: Option<String>,
+    pub scroll_up: Option<String>,
+    pub half_page_down: Option<String>,
+    pub half_page_up: Option<String>,
+    pub full_page_down: Option<String>,
+    pub full_page_up: Option<String>,
+    pub goto_top: Option<String>,
+    pub goto_bottom: Option<String>,
+    pub prev_buffer: Option<String>,
+    pub next_buffer: Option<String>,
+    pub search_forward: Option<String>,
+    pub search_backward: Option<String>,
+    pub next_match: Option<String>,
+    pub prev_match: Option<String>,
+    pub toggle_numbers: Option<String>,
+    pub toggle_wrap: Option<String>,
+    pub follow_mode: Option<String>,
+    pub enter_command: Option<String>,
+    pub filter: Option<String>,
+    pub visual: Option<String>,
+    pub set_mark: Option<String>,
+    pub jump_mark: Option<String>,
+    pub scroll_right: Option<String>,
+    pub scroll_left: Option<String>,
 }
 
 impl Default for GeneralConfig {
@@ -53,6 +78,7 @@ impl Default for GeneralConfig {
             mouse: true,
             smart_case: true,
             mmap_threshold: 10 * 1024 * 1024, // 10 MB
+            themes_dir: None,
         }
     }
 }

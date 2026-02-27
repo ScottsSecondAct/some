@@ -20,15 +20,29 @@ pub fn render(frame: &mut Frame, app: &App, area: Rect) {
         Mode::SearchInput { .. } => " [SEARCH]",
         Mode::CommandInput { .. } => " [COMMAND]",
         Mode::Follow => " [FOLLOW]",
+        Mode::FilterInput { .. } => " [FILTER]",
+        Mode::Visual { .. } => " [VISUAL]",
     };
 
-    let left = format!(" {}{}{} ", buf.name, buffer_indicator, mode_indicator);
+    let hex_indicator = if buf.is_binary() { " [HEX]" } else { "" };
+
+    let filter_indicator = if let Some((ref q, ref idx)) = app.filter {
+        format!(" [~{} {}L]", q, idx.len())
+    } else {
+        String::new()
+    };
+
+    let left = format!(" {}{}{}{}{} ", buf.name, buffer_indicator, mode_indicator, hex_indicator, filter_indicator);
+
+    let searching_indicator = if app.search.is_searching { " [searching…]" } else { "" };
 
     let search_info = if app.search.has_pattern() {
         format!(
-            " /{} ({} matches) \u{2502}",
+            " {}{} ({} matches){} \u{2502}",
+            if app.search.forward { "/" } else { "?" },
             app.search.query_string,
-            app.search.match_count()
+            app.search.match_count(),
+            searching_indicator,
         )
     } else {
         String::new()

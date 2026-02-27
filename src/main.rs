@@ -3,6 +3,7 @@ mod buffer;
 mod cli;
 mod config;
 mod input;
+mod keymap;
 mod line_numbers;
 mod search;
 mod statusbar;
@@ -33,10 +34,20 @@ fn main() -> Result<()> {
     let highlighter = syntax::SyntaxHighlighter::new(
         &config.general.theme,
         syntax_enabled,
+        config.general.themes_dir.as_deref(),
     );
 
     // Load buffers
-    let buffers = if cli_args.files.is_empty() {
+    let buffers = if let Some(ref diff_path) = cli_args.diff {
+        // Diff mode: compare first positional file against --diff FILE2
+        if cli_args.files.is_empty() {
+            eprintln!("some: --diff requires a FILE argument");
+            std::process::exit(1);
+        }
+        let diff_buf = buffer::Buffer::from_diff(&cli_args.files[0], diff_path)
+            .with_context(|| format!("Failed to create diff: {} vs {}", cli_args.files[0].display(), diff_path.display()))?;
+        vec![diff_buf]
+    } else if cli_args.files.is_empty() {
         // Read from stdin
         if atty::is(atty::Stream::Stdin) {
             eprintln!("Usage: some [OPTIONS] [FILE]...");
@@ -61,16 +72,11 @@ fn main() -> Result<()> {
         bufs
     };
 
-    // Warn about binary files
-    if buffers[0].is_binary() {
-        eprintln!(
-            "Warning: '{}' appears to be a binary file.",
-            buffers[0].name
-        );
-    }
-
     // Build the application state
     let mut app = app::App::new(buffers, config.clone(), highlighter);
+
+    // Start watching files for follow mode
+    app.start_watching();
 
     // Apply CLI-specific overrides
     if let Some(line) = cli_args.start_line {
@@ -116,18 +122,42 @@ fn run_tui(app: &mut app::App) -> Result<()> {
     result
 }
 
-/// Main event loop: render → wait for input → process → repeat.
+/// Poll-based event loop: render → check file changes → wait for input → repeat.
 fn event_loop(
     terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
     app: &mut app::App,
 ) -> Result<()> {
+    use std::time::Duration;
+
     loop {
         terminal.draw(|frame| {
             viewer::render(frame, app);
         })?;
 
-        let event = event::read().context("Failed to read terminal event")?;
-        input::handle_event(app, event);
+        // Check for file-change events (non-blocking); reload in follow mode
+        let mut got_change = false;
+        if let Some(rx) = &app.watcher_rx {
+            while let Ok(ev) = rx.try_recv() {
+                if let Ok(ev) = ev {
+                    use notify::EventKind;
+                    if matches!(ev.kind, EventKind::Modify(_) | EventKind::Create(_)) {
+                        got_change = true;
+                    }
+                }
+            }
+        }
+        if got_change && app.mode == app::Mode::Follow {
+            app.reload_active_buffer();
+        }
+
+        // Drain async search result batches
+        app.drain_search_results();
+
+        // Poll for terminal events with a short timeout (keeps follow mode responsive)
+        if event::poll(Duration::from_millis(200))? {
+            let ev = event::read().context("Failed to read terminal event")?;
+            input::handle_event(app, ev);
+        }
 
         if app.quit {
             break;

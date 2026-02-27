@@ -1,6 +1,18 @@
 use anyhow::Result;
 use regex::{Regex, RegexBuilder};
 use std::ops::Range;
+use std::sync::mpsc;
+
+/// Batch of matches sent from the async search thread.
+pub enum SearchBatch {
+    Progress {
+        matches: Vec<(usize, Range<usize>)>,
+        lines_scanned: usize,
+    },
+    Done {
+        matches: Vec<(usize, Range<usize>)>,
+    },
+}
 
 /// Tracks search state: pattern, all matches, current position.
 pub struct SearchState {
@@ -8,6 +20,14 @@ pub struct SearchState {
     pub query_string: String,
     pub matches: Vec<(usize, Range<usize>)>,
     pub current: usize,
+    /// true = forward search (/), false = backward search (?)
+    pub forward: bool,
+    /// Live matches while the user is typing (incremental preview)
+    pub preview_matches: Vec<(usize, Range<usize>)>,
+    /// True while an async search thread is running
+    pub is_searching: bool,
+    /// Receiver for async search results
+    pub search_rx: Option<mpsc::Receiver<SearchBatch>>,
 }
 
 impl SearchState {
@@ -17,6 +37,10 @@ impl SearchState {
             query_string: String::new(),
             matches: Vec::new(),
             current: 0,
+            forward: true,
+            preview_matches: Vec::new(),
+            is_searching: false,
+            search_rx: None,
         }
     }
 
@@ -26,6 +50,7 @@ impl SearchState {
         if query.is_empty() {
             self.pattern = None;
             self.matches.clear();
+            self.preview_matches.clear();
             return Ok(());
         }
         let case_insensitive = smart_case && !query.chars().any(|c| c.is_uppercase());
@@ -36,7 +61,7 @@ impl SearchState {
         Ok(())
     }
 
-    /// Run search across all lines.
+    /// Run search across all lines (synchronous, used for reload/etc).
     pub fn search_buffer(&mut self, buffer: &crate::buffer::Buffer) {
         self.matches.clear();
         self.current = 0;
@@ -48,6 +73,23 @@ impl SearchState {
             if let Some(text) = buffer.get_line(line_idx) {
                 for mat in regex.find_iter(text) {
                     self.matches.push((line_idx, mat.start()..mat.end()));
+                }
+            }
+        }
+    }
+
+    /// Search only the currently visible lines, updating `preview_matches`.
+    pub fn search_visible_lines(&mut self, buffer: &crate::buffer::Buffer, start: usize, end: usize) {
+        self.preview_matches.clear();
+        let regex = match &self.pattern {
+            Some(r) => r,
+            None => return,
+        };
+        let limit = end.min(buffer.line_count());
+        for line_idx in start..limit {
+            if let Some(text) = buffer.get_line(line_idx) {
+                for mat in regex.find_iter(text) {
+                    self.preview_matches.push((line_idx, mat.start()..mat.end()));
                 }
             }
         }
@@ -81,6 +123,14 @@ impl SearchState {
 
     pub fn matches_on_line(&self, line: usize) -> Vec<Range<usize>> {
         self.matches
+            .iter()
+            .filter(|(l, _)| *l == line)
+            .map(|(_, r)| r.clone())
+            .collect()
+    }
+
+    pub fn preview_matches_on_line(&self, line: usize) -> Vec<Range<usize>> {
+        self.preview_matches
             .iter()
             .filter(|(l, _)| *l == line)
             .map(|(_, r)| r.clone())

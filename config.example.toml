@@ -5,6 +5,7 @@
 # Syntax highlighting theme. Available themes include:
 #   base16-ocean.dark, base16-eighties.dark, base16-mocha.dark,
 #   InspiredGitHub, Solarized (dark), Solarized (light)
+# Bundled bonus themes: Monokai, Dracula, Nord, Catppuccin-Mocha
 theme = "base16-ocean.dark"
 
 # Show line numbers by default
@@ -22,6 +23,10 @@ mouse = true
 # Smart case search: case-insensitive unless query contains uppercase
 smart_case = true
 
+# Optional custom themes directory. Drop .tmTheme files here to load them.
+# Default: ~/.config/some/themes/
+# themes_dir = "/path/to/your/themes"
+
 [colors]
 # Status bar colors (hex RGB)
 status_bar_bg = "#2b303b"
@@ -34,3 +39,45 @@ search_match_fg = "#2b303b"
 # Line number gutter
 line_number_fg = "#65737e"
 gutter_bg = "#2b303b"
+
+# ---------------------------------------------------------------------------
+# [keys] — Custom keybindings (normal mode only; all fields optional)
+# Unset fields keep their built-in defaults.
+#
+# Supported formats:
+#   "q"          — single character
+#   "ctrl+d"     — control + character
+#   "space"      — space bar
+#   "enter"      — Enter / Return
+#   "tab"        — Tab
+#   "pagedown" / "pgdn"  — Page Down
+#   "pageup"  / "pgup"   — Page Up
+#   "home" / "end"       — Home / End
+#   "up" / "down" / "left" / "right"  — arrow keys
+# ---------------------------------------------------------------------------
+[keys]
+# quit            = "q"
+# scroll_down     = "j"
+# scroll_up       = "k"
+# half_page_down  = "ctrl+d"
+# half_page_up    = "ctrl+u"
+# full_page_down  = "space"
+# full_page_up    = "b"
+# goto_top        = "g"
+# goto_bottom     = "G"
+# prev_buffer     = "["
+# next_buffer     = "]"
+# search_forward  = "/"
+# search_backward = "?"
+# next_match      = "n"
+# prev_match      = "N"
+# toggle_numbers  = "l"
+# toggle_wrap     = "w"
+# follow_mode     = "F"
+# enter_command   = ":"
+# filter          = "&"
+# visual          = "v"
+# set_mark        = "m"
+# jump_mark       = "'"
+# scroll_right    = "right"
+# scroll_left     = "left"
