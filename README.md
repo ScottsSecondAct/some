@@ -279,7 +279,9 @@ line_number_fg = "#65737e"
 
 CLI flags always override config file settings.
 
-## Project Structure & Roadmap
+## Documentation
+
+See [MANUAL.md](MANUAL.md) for the full user manual — all features, keybindings, configuration options, and examples in one place.
 
 See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for a full module breakdown and architecture diagram.
 
