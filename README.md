@@ -1,5 +1,5 @@
 # some
-![AI Assisted](https://img.shields.io/badge/AI%20Assisted-Claude-blue?logo=anthropic)
+![AI Assisted](https://img.shields.io/badge/AI%20Assisted-Claude-blue?logo=anthropic) [![Release](https://github.com/ScottsSecondAct/some/actions/workflows/release.yml/badge.svg)](https://github.com/ScottsSecondAct/some/actions/workflows/release.yml)
 
 A fully functional terminal pager built in **Rust**, with syntax highlighting, regex search, mouse support, and a clean TUI — like `less`, but more. Now at **v0.3** with custom themes, git change indicators, unified diff view, transparent decompression, hex dump of binary files, async/incremental search, and configurable keybindings.
 
